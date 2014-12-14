@@ -1,21 +1,5 @@
 apply plugin: 'com.android.application'
 
-dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-    compile project(':libraries:AndroidTimesSquareLib:library')
-    compile project(':libraries:MicrowaveTimePickerLib:lib')
-    compile project(':libraries:JumperLib')
-    compile 'com.google.android.gms:play-services:6.1.11'
-    compile project(':libraries:AndroidSlidingPanel:library')
-    compile project(':libraries:facebook:facebook')
-    compile 'com.android.support:gridlayout-v7:21.0.0'
-    compile project(':libraries:android-support-v4-preferencefragmentlib')
-    compile project(':libraries:ViewPagerIndicator:library')
-    compile project(':libraries:FloatingActionButton:library')
-    compile project(':libraries:happyschedule-views')
-    compile project(':libraries:StickyListHeadersLib:library')
-}
-
 android {
     buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
     defaultConfig {
@@ -26,6 +10,7 @@ android {
         buildConfigField "us.wmwm.happyschedule.service.Poller", "POLLER", "null"
         buildConfigField "boolean","IS_AMAZON_ADS_ENABLED","false"
         buildConfigField "boolean","IS_GOOGLE_ADS_ENABLED","false"
+        buildConfigField "String","DEFAULT_DEPARTURE_VISION_ID","\"\""
     }
 
     lintOptions {
@@ -57,6 +42,8 @@ android {
             buildConfigField "us.wmwm.happyschedule.service.Poller", "POLLER", "new us.wmwm.happyschedule.service.DeparturePoller()"
             buildConfigField "boolean","IS_AMAZON_ADS_ENABLED","false"
             buildConfigField "boolean","IS_GOOGLE_ADS_ENABLED","true"
+            buildConfigField "String","DEFAULT_DEPARTURE_VISION_ID","\"105\""
+
         }
         preIcs {
             flavorDimension "version"
@@ -73,10 +60,29 @@ android {
             targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
             compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
         }
+
+        tv {
+            flavorDimension "version"
+            versionCode computeVersionCode()
+            minSdkVersion 17
+            targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+            compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+        }
+
+    }
+
+    sourceSets {
+        tv.setRoot("src/tv")
     }
 
     signingConfigs {
         release {
+            storeFile file(project.RAILS_KEYSTORE)
+            storePassword project.RAILS_KEYSTORE_PASSWORD
+            keyAlias project.RAILS_KEYSTORE_ALIAS
+            keyPassword project.RAILS_KEY_PASS
+        }
+        debug {
             storeFile file(project.RAILS_KEYSTORE)
             storePassword project.RAILS_KEYSTORE_PASSWORD
             keyAlias project.RAILS_KEYSTORE_ALIAS
@@ -138,6 +144,22 @@ def splitDatabase(variant) {
     delete {
         delete "${outputDir.absolutePath}/database_db"
     }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile project(':libraries:AndroidTimesSquareLib:library')
+    compile project(':libraries:MicrowaveTimePickerLib:lib')
+    compile project(':libraries:JumperLib')
+    compile 'com.google.android.gms:play-services:6.1.11'
+    compile project(':libraries:facebook:facebook')
+    compile 'com.android.support:gridlayout-v7:21.0.0'
+    compile project(':libraries:android-support-v4-preferencefragmentlib')
+    compile project(':libraries:ViewPagerIndicator:library')
+    compile project(':libraries:FloatingActionButton:library')
+    compile project(':libraries:happyschedule-views')
+    compile project(':libraries:StickyListHeadersLib:library')
+    tvCompile 'com.android.support:leanback-v17:21.0.0'
 }
 
 //android.applicationVariants.all { variant ->
